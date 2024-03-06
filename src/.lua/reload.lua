@@ -26,7 +26,7 @@ local function worker(info)
   local stats = instance:getUsage()
   for k, v in pairs(stats) do if result[k] then result[k].usage = v end end
   for _, v in pairs(result) do config:updateDomain(v.domain, v.usage) end
-  print('updated', info.email)
+  Log(kLogInfo, 'updated %s' % {info.email})
 end
 
 function M.reload()
