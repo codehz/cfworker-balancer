@@ -1,0 +1,5 @@
+.vscode
+*.com
+*.db
+*.db-*
+/test*
