@@ -29,12 +29,10 @@ local function worker(info)
   Log(kLogInfo, 'updated %s' % {info.email})
 end
 
-function M.reload()
+Config.setup()
+
+return function ()
   for email, key in config:getAccounts() do
     go(worker, {email = email, key = key})
   end
 end
-
-Config.setup()
-
-return M

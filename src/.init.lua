@@ -4,7 +4,7 @@ local alist = require 'alist'
 ProgramBrand('Cloudflare Worker Balancer')
 
 function OnServerHeartbeat()
-  reload.reload()
+  reload()
 end
 
 function OnHttpRequest()
