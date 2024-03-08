@@ -56,6 +56,7 @@ function M:__close()
 end
 
 function M.setup()
+  Log(kLogInfo, 'setup config.db')
   local db = sql.open 'config.db'
   db:busy_timeout(1000)
   db:exec [[PRAGMA foreign_keys=ON]]
