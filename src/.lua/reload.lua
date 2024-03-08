@@ -32,7 +32,9 @@ end
 Config.setup()
 
 return function ()
+  collectgarbage "stop"
   for email, key in config:getAccounts() do
     go(worker, {email = email, key = key})
   end
+  collectgarbage "restart"
 end
