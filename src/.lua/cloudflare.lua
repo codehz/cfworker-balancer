@@ -65,7 +65,10 @@ function M:getUsage()
   ]], {date = os.date('%Y-%m-%d', os.time() - 86400)})
   local stats = {}
   for _, zone in ipairs(res.viewer.zones) do
-    stats[zone.zoneTag] = zone.httpRequests1dGroups[1].sum.requests
+    for _, group in ipairs(zone.httpRequests1dGroups) do
+      stats[zone.zoneTag] = group.sum.requests
+      break
+    end
   end
   return stats
 end
