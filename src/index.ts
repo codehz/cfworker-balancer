@@ -1,7 +1,8 @@
 import { classnames, html, mount, on } from "@codehz/mutable-element";
 import { create } from "css-in-bun" with { type: "macro" };
-import { Status } from "./Status";
 import { Accounts } from "./accounts";
+import { Alist } from "./alist";
+import { Status } from "./status";
 import { Tabs } from "./tab";
 import { UpdateSecret } from "./update-secret";
 
@@ -22,6 +23,10 @@ document.fonts.load('16px "Fusion Pixel"').then(() => {
           {
             title: "更新管理员密码",
             content: UpdateSecret,
+          },
+          {
+            title: "Alist 配置",
+            content: Alist,
           },
           {
             title: "Cloudflare 帐号管理",

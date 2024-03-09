@@ -21,6 +21,6 @@ const styles = create({
     width: "100%",
     height: 600,
     marginTop: 10,
-    transition: "height 1s ease",
+    transition: "height 0.1s ease",
   },
 });
