@@ -17,6 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - uses: oven-sh/setup-bun@v1
+
+    - run: bun i
+
+    - run: bun run build
+
     - name: Build
       run: make
 
