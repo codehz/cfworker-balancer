@@ -17,7 +17,6 @@ const styles = create({
 });
 
 async function load(this: HTMLElement) {
-  console.log("here");
   const res = await fetch("/statusz");
   return await res.text();
 }
