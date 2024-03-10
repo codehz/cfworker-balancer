@@ -9,6 +9,7 @@ import {
 } from "@codehz/mutable-element";
 import { nanoid } from "nanoid";
 import { aria, dispatchEvent, viewTransitionName } from "./extra";
+import { safeViewTransition } from "safe-view-transition";
 
 export function Tabs(
   ...content: {
@@ -46,12 +47,14 @@ export function Tabs(
       tabs,
       on<Node, CustomEvent<{ index: number }>>("tabchange", (e) => {
         const index = e.detail.index;
-        mutate(body, [
-          empty(),
-          viewTransitionName(`${id}-content-${index}`),
-          content[index].content,
-        ]);
-        tabs.assign(getList(index));
+        safeViewTransition(async () => {
+          await mutate(body, [
+            empty(),
+            viewTransitionName(`${id}-content-${index}`),
+            content[index].content,
+          ]);
+          tabs.assign(getList(index));
+        });
       })
     ),
     html`div.window[role=tabpanel]`(viewTransitionName(`${id}-content`), body),
