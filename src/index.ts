@@ -34,7 +34,7 @@ document.fonts.load('12px "Fusion Pixel"').then(() => {
             content: Alist,
           },
           {
-            title: "Cloudflare 帐号管理",
+            title: "Cloudflare 账号管理",
             content: Accounts,
           },
           { title: "状态", content: Status }

@@ -33,7 +33,7 @@ export async function Accounts() {
       classnames(styles.Toolbar),
       html`button`("刷新", on("click", update)),
       html`button[disabled]`(
-        "删除帐号",
+        "删除账号",
         on("click", async function () {
           try {
             await fetch("/api/delete-account.lua", {
@@ -55,7 +55,7 @@ export async function Accounts() {
     ),
     html`form`(
       html`fieldset`(
-        html`legend`("添加/编辑帐号"),
+        html`legend`("添加/编辑账号"),
         html`div`(
           classnames(styles.EditFieldSet),
           html`div.field-row-stacked`(
