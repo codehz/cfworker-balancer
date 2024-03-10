@@ -28,8 +28,10 @@
   p {
     margin-block: 0;
   }
-  code {
-    -webkit-user-select: auto;
-    user-select: auto;
+  pre {
+    font-family: "Fusion Pixel Monospaced";
+    -webkit-font-smoothing: none;
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
