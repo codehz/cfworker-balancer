@@ -1,0 +1,49 @@
+# Cloudflare Worker Balancer
+
+受邀开发的一个给 Alist 使用的 Cloudflare Worker 代理负载均衡程序。
+
+单一文件部署，全平台通用二进制。
+（本功能由 redbean.dev 提供，关于 redbean 的基础使用，可以参考 redbean 的官方网站）
+
+本帮助文件可以使用 `./server.com -h` 来查看。(使用方向键导航)
+
+## 功能
+
+转发 Alist 请求，将区域识别到 CN 的重定向到 Cloudflare Worker 来处理（并允许负载均衡），
+其他的则使用 Alist 提供的直链。
+
+## 使用说明
+
+1. 在 Release 页面点击下载 server.com ，.com 后缀仅用于在 Windows 系统中允许直接被
+Explorer 识别，可以双击运行
+2. 如果要在 Linux/MacOS 环境中运行，需要先设置可执行权限，使用命令 `chmod +x server.com`
+3. 使用命令 `sudo ./server.com -vvdp80 -p443 -P server.pid -L server.log` 运行
+4. 如需停止，可以运行 `kill -TERM $(cat server.pid)` 来终止
+5. 运行参数见下方介绍
+
+## 注意事项
+
+当前本程序预期在 Cloudflare 网络背后运行，因为依赖 HTTP_CF_IPCOUNTRY 头部来判断访客地区。
+
+上面列出的运行指令包含 -p443 将会使用自签名证书，因此不应使用 Full(strict) 模式。
+
+如需使用 Strict 模式，请手动将 Origin CA certificates 证书放置到特定位置，然后通过下面的
+-K 和 -C 参数来指定证书。
+
+## 参数
+
+本章节只包含了部分参数的介绍，其他参数请参考 redbean.dev 官方网站的信息。
+
+  -h or -?  显示帮助信息
+  -d        后台运行
+  -v        增加日志详细程度（可重复）
+  -K PATH   指定 TLS 证书的私钥路径（可重复）
+  -C PATH   指定 TLS 证书路径（可重复）
+  -p PORT   监听端口（可重复）
+  -l ADDR   监听地址（可重复）
+  -L PATH   日志路径
+  -P PID    PID 文件路径
+
+## License
+
+WTFPL
