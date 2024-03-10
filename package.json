@@ -19,6 +19,7 @@
     "@codehz/mutable-element": "npm:@jsr/codehz__mutable-element",
     "css-in-bun": "^0.1.6",
     "immer": "^10.0.3",
+    "micromark": "^4.0.0",
     "nanoid": "^5.0.6",
     "safe-view-transition": "^0.3.3"
   }

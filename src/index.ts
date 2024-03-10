@@ -2,6 +2,7 @@ import { classnames, html, mount, on } from "@codehz/mutable-element";
 import { create } from "css-in-bun" with { type: "macro" };
 import { Accounts } from "./accounts";
 import { Alist } from "./alist";
+import { Help } from "./help";
 import { Status } from "./status";
 import { Tabs } from "./tab";
 import { UpdateSecret } from "./update-secret";
@@ -20,6 +21,10 @@ document.fonts.load('16px "Fusion Pixel"').then(() => {
       html`main`(
         classnames("window-body", styles.main),
         Tabs(
+          {
+            title: "帮助",
+            content: Help,
+          },
           {
             title: "更新管理员密码",
             content: UpdateSecret,
