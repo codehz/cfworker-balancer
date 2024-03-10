@@ -13,13 +13,13 @@ import { produce } from "immer";
 import { nanoid } from "nanoid";
 import { dispatchEvent } from "./extra";
 
-export function Accounts() {
+export async function Accounts() {
   const id = nanoid();
   const dynamic = list(new KeyedListRenderer("email", renderPair));
   const selectedAccount = new Reactor<
     { email: string; key: string } | undefined
   >();
-  update();
+  await update();
   return html`div`(
     classnames(styles.Accounts),
     html`div`(
