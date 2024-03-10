@@ -7,7 +7,7 @@ import { Status } from "./status";
 import { Tabs } from "./tab";
 import { UpdateSecret } from "./update-secret";
 
-document.fonts.load('16px "Fusion Pixel"').then(() => {
+document.fonts.load('12px "Fusion Pixel"').then(() => {
   mount(
     document.body,
     html`header.title-bar`(
