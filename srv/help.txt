@@ -19,7 +19,9 @@ Explorer 识别，可以双击运行
 2. 如果要在 Linux/MacOS 环境中运行，需要先设置可执行权限，使用命令 `chmod +x server.com`
 3. 使用命令 `sudo ./server.com -vvdp80 -p443 -P server.pid -L server.log` 运行
 4. 如需停止，可以运行 `kill -TERM $(cat server.pid)` 来终止
-5. 运行参数见下方介绍
+5. 通过网址直接访问会询问管理员密码，管理员用户名固定为 admin ，默认密码为 secret ，
+请在登录后尽快通过面板修改密码。
+6. 运行参数见下方介绍
 
 ## 注意事项
 
