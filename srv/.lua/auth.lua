@@ -5,14 +5,6 @@ local function verifyBasicAuth(auth, secret)
   if not hashed then error 'invalid authorization header' end
   local user, pass = assert(DecodeBase64(hashed):match('^([^:]+):([^:]+)$'))
   if user ~= 'admin' or pass ~= secret then error 'invalid secret' end
-  return function()
-    SetCookie('secret', secret, {HttpOnly = true, SameSite = 'Lax'})
-  end
-end
-
-local function verifyCookie(auth, secret)
-  if auth ~= secret then error 'invalid secret' end
-  return function() end
 end
 
 return function()
@@ -20,7 +12,5 @@ return function()
   local secret = config:getConfig 'secret' or 'secret'
   local basicauth = GetHeader('Authorization')
   if basicauth then return verifyBasicAuth(basicauth, secret) end
-  local cookie = GetCookie('secret')
-  if cookie then return verifyCookie(cookie, secret) end
   error 'authorization required'
 end
