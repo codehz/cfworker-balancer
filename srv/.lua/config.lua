@@ -13,10 +13,15 @@ function M:new()
   return o
 end
 
+function M:prepare(sql)
+  local stmt = self.db:prepare(sql)
+  if not stmt then error(self.db:errmsg(), 2) end
+  return stmt
+end
+
 function M:getConfig(key)
   if not self._getConfig then
-    self._getConfig =
-      self.db:prepare [[SELECT value FROM config WHERE key = ?1]]
+    self._getConfig = self:prepare [[SELECT value FROM config WHERE key = ?1]]
   end
   self._getConfig:reset()
   self._getConfig:bind(1, key)
@@ -27,7 +32,7 @@ end
 function M:putConfig(key, value)
   if not self._putConfig then
     self._putConfig =
-      self.db:prepare [[INSERT INTO config (key, value) VALUES (?1, ?2) ON CONFLICT(key) DO UPDATE SET value = ?2]]
+      self:prepare [[INSERT INTO config (key, value) VALUES (?1, ?2) ON CONFLICT(key) DO UPDATE SET value = ?2]]
   end
   self._putConfig:reset()
   self._putConfig:bind(1, key)
@@ -35,12 +40,14 @@ function M:putConfig(key, value)
   assert(self._putConfig:step() == sql.DONE)
 end
 
-function M:getAccounts() return self.db:urows [[SELECT * FROM accounts]] end
+function M:getAccounts() return self.db:nrows [[SELECT * FROM accounts]] end
+
+function M:getDomains() return self.db:nrows [[SELECT * FROM account_domains]] end
 
 function M:putAccount(email, key)
   if not self._putAccount then
     self._putAccount =
-      self.db:prepare [[INSERT INTO accounts (email, key) VALUES (?1, ?2) ON CONFLICT(email) DO UPDATE SET key = ?2]]
+      self:prepare [[INSERT INTO accounts (email, key) VALUES (?1, ?2) ON CONFLICT(email) DO UPDATE SET key = ?2]]
   end
   self._putAccount:reset()
   self._putAccount:bind(1, email)
@@ -50,29 +57,47 @@ end
 
 function M:deleteAccount(email)
   if not self._deleteAccount then
-    self._deleteAccount =
-      self.db:prepare [[DELETE FROM accounts WHERE email = ?1]]
+    self._deleteAccount = self:prepare [[DELETE FROM accounts WHERE email = ?1]]
   end
   self._deleteAccount:reset()
   self._deleteAccount:bind(1, email)
   assert(self._deleteAccount:step() == sql.DONE)
 end
 
-function M:updateDomain(domain, usage)
-  local stmt = assert(self.db:prepare [[
-    INSERT INTO domains (domain, usage)
-    VALUES (?1, ?2)
-    ON CONFLICT(domain) DO UPDATE SET usage = ?2
-  ]])
-  stmt:reset()
-  stmt:bind(1, domain)
-  stmt:bind(2, usage)
-  if sql.DONE ~= stmt:step() then error 'failed to update domain' end
+function M:updateDomains(email, cb)
+  local delete = self:prepare [[DELETE FROM account_domains WHERE email = ?1]]
+  local insert =
+    self:prepare [[INSERT INTO account_domains (email, domain, usage, updated_at) VALUES (?1, ?2, ?3, ?4)]]
+  local db = self.db
+  local function update(domain, usage)
+    local time = GetTime()
+    insert:reset()
+    insert:bind_values(email, domain, usage, time)
+    if sql.DONE ~= insert:step() then
+      error('failed to update domain: %s' % {db:errmsg()})
+    end
+    Log(kLogInfo, 'updated domain %s %s %s %s' % {email, domain, usage, time})
+  end
+  self.db:exec [[BEGIN IMMEDIATE]]
+  local status, err = pcall(function()
+    delete:reset()
+    delete:bind(1, email)
+    if sql.DONE ~= delete:step() then
+      error('failed to delete domains: %s' % {db:errmsg()})
+    end
+    cb(update)
+  end)
+  if status then
+    self.db:exec [[COMMIT]]
+  else
+    self.db:exec [[ROLLBACK]]
+    error(err)
+  end
 end
 
 function M:getMinUsageDomain()
-  local stmt = assert(self.db:prepare [[
-    SELECT domain, usage FROM domains
+  local stmt = assert(self:prepare [[
+    SELECT domain, usage FROM account_domains
     WHERE usage < 90000
     ORDER BY usage
     LIMIT 1
@@ -107,19 +132,18 @@ function M.setup()
     ) WITHOUT ROWID
   ]]
   db:exec [[
-    CREATE TABLE IF NOT EXISTS domains (
-      domain TEXT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS account_domains (
+      email TEXT NOT NULL,
+      domain TEXT NOT NULL,
       usage INTEGER NOT NULL DEFAULT 0,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) WITHOUT ROWID
+      updated_at NUMBER DEFAULT 0,
+      PRIMARY KEY (email, domain),
+      FOREIGN KEY (email) REFERENCES accounts(email) ON DELETE CASCADE
+    )
   ]]
   db:exec [[
-    CREATE TRIGGER IF NOT EXISTS update_domains_updated_at
-    AFTER UPDATE ON domains
-    FOR EACH ROW BEGIN
-      UPDATE domains
-      SET updated_at = CURRENT_TIMESTAMP;
-    END
+    CREATE INDEX IF NOT EXISTS account_domains_email_index
+    ON account_domains(email)
   ]]
   db:close();
 end

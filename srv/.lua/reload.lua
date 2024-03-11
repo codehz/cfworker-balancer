@@ -25,7 +25,9 @@ local function worker(info)
   end
   local stats = instance:getUsage()
   for k, v in pairs(stats) do if result[k] then result[k].usage = v end end
-  for _, v in pairs(result) do config:updateDomain(v.domain, v.usage) end
+  config:updateDomains(info.email, function(update)
+    for _, v in pairs(result) do update(v.domain, v.usage) end
+  end)
   Log(kLogInfo, 'updated %s' % {info.email})
 end
 
@@ -33,8 +35,8 @@ Config.setup()
 
 return function ()
   collectgarbage "stop"
-  for email, key in config:getAccounts() do
-    go(worker, {email = email, key = key})
+  for account in config:getAccounts() do
+    go(worker, account)
   end
   collectgarbage "restart"
 end

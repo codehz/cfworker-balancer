@@ -3,7 +3,7 @@ import { create } from "css-in-bun" with { type: "macro" };
 import { Accounts } from "./accounts";
 import { Alist } from "./alist";
 import { Help } from "./help";
-import { Status } from "./status";
+import { StatusPage } from "./status";
 import { Tabs } from "./tab";
 import { UpdateSecret } from "./update-secret";
 
@@ -37,7 +37,7 @@ document.fonts.load('12px "Fusion Pixel"').then(() => {
             title: "Cloudflare 账号管理",
             content: Accounts,
           },
-          { title: "状态", content: Status }
+          { title: "状态", content: StatusPage }
         )
       )
     )
