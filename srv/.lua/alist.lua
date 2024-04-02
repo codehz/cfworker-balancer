@@ -33,9 +33,6 @@ function M:verify()
   local rawhash = GetCryptoHash('SHA256', input, self.token)
   local hash = EncodeBase64(rawhash):gsub('+', '-'):gsub('/', '_')
   local encoded = '%s:%s' % {hash, expire}
-  print(self.path)
-  print(encoded)
-  print(self.sign)
   if encoded ~= self.sign then error 'token invalid' end
 end
 
