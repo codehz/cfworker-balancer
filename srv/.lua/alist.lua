@@ -52,8 +52,8 @@ end
 
 return function()
   local alist<close> = M:new()
-  local IpCountry = GetHeader('HTTP_CF_IPCOUNTRY')
-  Log(kLogInfo, 'HTTP_CF_IPCOUNTRY: %s' % {IpCountry or '(nil)'})
+  local IpCountry = GetHeader('CF-IPCountry')
+  Log(kLogInfo, 'CF-IPCountry: %s' % {IpCountry or '(nil)'})
   alist:verify()
   if IpCountry == 'CN' then
     local domain = alist.config:getMinUsageDomain()
