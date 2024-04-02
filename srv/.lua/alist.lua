@@ -53,6 +53,7 @@ end
 return function()
   local alist<close> = M:new()
   local IpCountry = GetHeader('CF-IPCountry')
+  Log(kLogInfo, 'RemoteIp: %s' % {GetRemoteAddr() or '(nil)'})
   Log(kLogInfo, 'CF-IPCountry: %s' % {IpCountry or '(nil)'})
   alist:verify()
   if IpCountry == 'CN' then
