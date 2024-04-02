@@ -29,9 +29,13 @@ function M:verify()
   local _, expire = assert(self.sign:match('([^:]+):([^:]+)'))
   local parsed = tonumber(expire)
   if parsed > 0 and parsed < GetTime() then error 'token expired' end
-  local rawhash = GetCryptoHash('SHA256', self.path, self.token)
+  local input = '%s:%s' % {self.path, expire}
+  local rawhash = GetCryptoHash('SHA256', input, self.token)
   local hash = EncodeBase64(rawhash):gsub('+', '-'):gsub('/', '_')
   local encoded = '%s:%s' % {hash, expire}
+  print(self.path)
+  print(encoded)
+  print(self.sign)
   if encoded ~= self.sign then error 'token invalid' end
 end
 
