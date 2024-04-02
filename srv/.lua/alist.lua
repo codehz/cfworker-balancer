@@ -1,5 +1,6 @@
 local re = require 're'
-local Config = require 'config'
+local config = require 'config'
+local sharedstate = require 'sharedstate'
 
 local function FetchJson(...)
   local status, headers, body = assert(Fetch(...))
@@ -10,11 +11,9 @@ end
 local M = {}
 
 function M:new()
-  local config = Config:new()
-  local token = assert(config:getConfig 'alist-token')
-  local address = assert(config:getConfig 'alist-address')
+  local token = config.alist.token
+  local address = config.alist.address
   local o = {
-    config = config,
     token = token,
     address = address,
     sign = GetParam('sign'),
@@ -36,8 +35,6 @@ function M:verify()
   if encoded ~= self.sign then error 'token invalid' end
 end
 
-function M:__close() self.config:__close() end
-
 function M:direct()
   local link = FetchJson(self.address .. '/api/fs/link', {
     method = 'POST',
@@ -57,7 +54,7 @@ return function()
   Log(kLogInfo, 'CF-IPCountry: %s' % {IpCountry or '(nil)'})
   alist:verify()
   if IpCountry == 'CN' then
-    local domain = alist.config:getMinUsageDomain()
+    local domain = sharedstate.getMinUsageDomain()
     if domain then
       ServeRedirect(302, EncodeUrl {
         scheme = 'https',

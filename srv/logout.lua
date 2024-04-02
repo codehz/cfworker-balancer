@@ -1,0 +1,5 @@
+SetStatus(401)
+SetHeader('Content-Type', 'application/json; charset=utf-8')
+SetHeader('WWW-Authenticate', 'Basic realm="admin", charset="UTF-8"')
+SetHeader('Refresh', '5; url=/')
+Write(EncodeJson {error = '您已退出登录'})

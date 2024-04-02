@@ -1,0 +1,8 @@
+[alist]
+address = "https://alist.example.com"
+token = "alist-xxxxxxx"
+[[accounts]]
+email = "example@example.com"
+key = "123123123123123"
+[admin]
+secret = "secret"

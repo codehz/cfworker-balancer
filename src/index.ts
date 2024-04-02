@@ -13,7 +13,9 @@ document.fonts.load('12px "Fusion Pixel"').then(() => {
     html`header.title-bar`(
       html`div.title-bar-text`("Cloudflare Worker Balancer"),
       html`div.title-bar-controls`(
-        html`button[aria-label=Close]`(on("click", () => window.close()))
+        html`button[aria-label=Close]`(
+          on("click", () => (location.href = "/logout.lua"))
+        )
       )
     ),
     html`div`(

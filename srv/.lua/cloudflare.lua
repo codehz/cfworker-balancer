@@ -17,7 +17,9 @@ function M:_get(name)
     }
   }))
   local res = assert(DecodeJson(body))
-  if res.success == false then error(EncodeLua(res.errors)) end
+  if res.success == false then
+    error(EncodeLua({current = self, errors = res.errors}))
+  end
   return res.result
 end
 

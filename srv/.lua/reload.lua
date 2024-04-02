@@ -3,14 +3,13 @@ local unix = require 'unix'
 local re = require 're'
 local Cloudflare = require 'cloudflare'
 local go = require 'go'
-local Config = require 'config'
+local config = require 'config'
+local sharedstate = require 'sharedstate'
 
 local ExtractDomain = re.compile [[^([^/]+)/\*]]
-local config = Config:new()
 
 local function worker(info)
   local instance = Cloudflare:new(info)
-  local config<close> = Config:new()
   local zones = instance:listZones()
   local result = {}
   for _, zone in ipairs(zones) do
@@ -25,18 +24,14 @@ local function worker(info)
   end
   local stats = instance:getUsage()
   for k, v in pairs(stats) do if result[k] then result[k].usage = v end end
-  config:updateDomains(info.email, function(update)
-    for _, v in pairs(result) do update(v.domain, v.usage) end
-  end)
-  Log(kLogInfo, 'updated %s' % {info.email})
+  for _, v in pairs(result) do
+    sharedstate.put(info.email, v.domain, v.usage)
+    Log(kLogInfo, 'updated %s: %s (%d)' % {info.email, v.domain, v.usage})
+  end
 end
 
-Config.setup()
-
-return function ()
-  collectgarbage "stop"
-  for account in config:getAccounts() do
-    go(worker, account)
-  end
-  collectgarbage "restart"
+return function()
+  collectgarbage 'stop'
+  for idx, account in ipairs(config.accounts) do go(worker, account) end
+  collectgarbage 'restart'
 end

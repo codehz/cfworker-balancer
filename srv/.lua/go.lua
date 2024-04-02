@@ -6,4 +6,5 @@ return function(func, ...)
     func(...)
     unix.exit(0)
   end
+  return child
 end
