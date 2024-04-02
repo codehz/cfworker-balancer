@@ -52,9 +52,10 @@ end
 
 return function()
   local alist<close> = M:new()
-  local isCN = GetHeader('HTTP_CF_IPCOUNTRY') == 'CN'
+  local IpCountry = GetHeader('HTTP_CF_IPCOUNTRY')
+  Log(kLogInfo, 'HTTP_CF_IPCOUNTRY: %s' % {IpCountry or '(nil)'})
   alist:verify()
-  if isCN then
+  if IpCountry == 'CN' then
     local domain = alist.config:getMinUsageDomain()
     if domain then
       ServeRedirect(302, EncodeUrl {
